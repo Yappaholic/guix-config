@@ -1,9 +1,8 @@
-#+title: Readme
+#+title: GNU Guix System Configuration files
 #+author: Yappaholic
 #+description: Personal configuration files for GNU Guix System
 
 
-* GNU Guix System Configuration files
 
 This repository has my personal config for using Guix System/OS, which is configured in Guile Scheme language and has a lot of similarities to the Nix/NixOS configuration system.
 
@@ -13,8 +12,8 @@ This repository has my personal config for using Guix System/OS, which is config
 - Transform utilities for using xkeyboard-config@2.44 and nvidia-drivers
 - Home manager with pipewire service and fish integration (kind of)
 - Package definition for [[https://github.com/DreamMaoMao/maomaowm.git][Maomao Window Manager]]
+- Package definition for Neovim 0.11.1
 - Package definition for [[https://github.com/ghostty-org/ghostty][Ghostty terminal]] (WIP)
-- Package definition for Neovim 0.11 (WIP)
 
 This list is not finished, maybe I'll even create Guix channel for keeping all the packages in the future.
 
@@ -39,4 +38,10 @@ Then, to update your system with the new package, use this command:
 
 #+begin_src bash
 sudo -E guix system -L path/to/custom/packages reconfigure path/to/system/config/file
+#+end_src
+
+Or, you can optionally install a package from the command line:
+
+#+begin_src bash
+guix package --install -f path/to/custom/package/file
 #+end_src
