@@ -14,9 +14,6 @@
 (home-environment
  (services
   (append (list
-           ;; (simple-service 'home-envvars-service
-           ;;                 home-environment-variables-service-type
-           ;;                 '())
            (service home-bash-service-type
                     (home-bash-configuration
                      (environment-variables (list
