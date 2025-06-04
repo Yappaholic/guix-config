@@ -1,44 +1,50 @@
 (define-module (config system system)
-  ;; Util
+  ;; Scheme
   #:use-module (srfi srfi-1)
   ;; Gnu
   #:use-module (gnu)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages terminals)
   #:use-module (gnu packages wm)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages haskell)
+  #:use-module (gnu packages package-management)
+  #:use-module (guix transformations)
+  #:use-module (guix packages)
   ;; Personal
   #:use-module (config packages maomaowm)
   #:use-module (config packages xkeyboard-config)
-  #:use-module (config packages xorg-git)
-  #:use-module (config util transforms)
-  #:use-module (config packages haskell)
   ;; Nongnu
   #:use-module (nongnu packages nvidia)
   #:use-module (nongnu services nvidia)
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux))
 
-(use-service-modules cups desktop sddm networking ssh xorg)
+(use-service-modules cups desktop nix sddm networking ssh xorg)
 (define %my-desktop-services
   (modify-services %desktop-services
-                   (gdm-service-type config =>
-                                     (gdm-configuration
-                                      (inherit config)
-                                      (gdm (replace-mesa gdm))
-                                      (wayland? #true))
-                                     )))
+                   (guix-service-type config =>
+                                      (guix-configuration
+                                       (inherit config)
+                                       (substitute-urls
+                                        (append (list
+                                                 "https://mirrors.sjtug.sjtu.edu.cn/guix"
+                                                 "https://bordeaux-us-east-mirror.cbaines.net/")
+                                                %default-substitute-urls))))
+                   (delete gdm-service-type)
+                   ))
 
 (operating-system
- (kernel linux)
+ (kernel linux-6.14)
  (initrd microcode-initrd)
  (kernel-arguments
   '("modprobe.blacklist=nouveau" "nvidia_drm.fbdev=1" "nvidia_drm.modeset=1"))
  (firmware (list linux-firmware nvidia-firmware))
  (locale "en_US.utf8")
  (timezone "Europe/Minsk")
- (keyboard-layout (keyboard-layout "us" "colemak_dh_wide_iso"))
+ (keyboard-layout (keyboard-layout "us" "colemak_dh_iso"))
  (host-name "guixx")
  (groups (cons*
           (user-group
@@ -60,25 +66,23 @@
  (packages (append (list
                     ;; X11
                     (replace-mesa xmonad)
-                    ghc ghc-xmonad-contrib
+                    ghc-xmonad-contrib
                     xmobar
-                    pipewire
-                    wireplumber
-                    (xtransform xinit)
-                    (xtransform setxkbmap)
-                    ;; Wayland
-                    (xtransform (replace-mesa maomao)))
+                    ghc
+                    nvda
+                    libvterm
+                    clang-toolchain
+                    (replace-mesa nix)
+                    (update-keyboard setxkbmap))
                    %base-packages))
 
  ;; Below is the list of system services.  To search for available
  ;; services, run 'guix system search KEYWORD' in a terminal.
  (services
   (cons* (service nvidia-service-type)
-         (set-xorg-configuration
-          (xorg-configuration
-           (modules (cons* nvda %default-xorg-modules))
-           (server (xtransform (replace-mesa xorg-server)))
-           (drivers '("nvidia"))))
+         (service nix-service-type
+                  (nix-configuration
+                   (extra-config '("experimental-features = nix-command flakes"))))
          %my-desktop-services))
 
  (bootloader (bootloader-configuration
@@ -87,19 +91,19 @@
               (keyboard-layout keyboard-layout)))
  (swap-devices (list (swap-space
                       (target (uuid
-                               "f07dbf7d-8d85-4954-b6db-6157af2e2a0a")))))
+                               "1250673d-4417-41a8-b75c-d8e4a18b0dac")))))
 
  ;; The list of file systems that get "mounted".  The unique
  ;; file system identifiers there ("UUIDs") can be obtained
  ;; by running 'blkid' in a terminal.
  (file-systems (cons* (file-system
                        (mount-point "/boot/efi")
-                       (device (uuid "5C69-CF56"
+                       (device (uuid "15A4-FA1A"
                                      'fat32))
                        (type "vfat"))
                       (file-system
                        (mount-point "/")
                        (device (uuid
-                                "da9f423e-a1c9-4c4f-b408-731ac84fef39"
+                                "d7ec11ca-9dff-4c4f-b1b9-1ea5b126ae0a"
                                 'ext4))
                        (type "ext4")) %base-file-systems)))

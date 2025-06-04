@@ -20,7 +20,9 @@ fi
 source /etc/bashrc
 export __GLX_VENDOR_LIBRARY_NAME=nvidia
 export LIBVA_DRIVER_NAME=nvidia
-export PATH=$PATH:/opt/bin
+export PATH=$PATH:/opt/bin:~/.cargo/bin:~/go/bin
+export FONTCONFIG_PATH=~/.config/fontconfig
+
 
 # Adjust the prompt depending on whether we're in 'guix environment'.
 if [ -n "$GUIX_ENVIRONMENT" ]
@@ -32,9 +34,11 @@ fi
 alias ls='ls -p --color=auto'
 alias ll='ls -l'
 alias grep='grep --color=auto'
+source /run/current-system/profile/etc/profile.d/nix.sh
+source ~/.nix-profile/etc/profile.d/hm-session-vars.sh
 
-if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
+if [[ $(ps --no-header --pid=$PPID --format=comm) != "nu" && -z ''${BASH_EXECUTION_STRING} ]]
     then
       shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
-      exec fish $LOGIN_OPTION
+      exec nu $LOGIN_OPTION
     fi

@@ -15,6 +15,7 @@
   #:use-module (guix gexp)
   #:use-module (guix build-system cmake)
   #:export (luajit-2.1-1)
+  #:export (tree-sitter-0.25.4)
   #:export (neovim-0.11.1))
 
 (define-public neovim-0.11.1

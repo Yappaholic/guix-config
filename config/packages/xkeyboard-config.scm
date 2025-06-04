@@ -2,15 +2,16 @@
   #:use-module (gnu)
   #:use-module (gnu packages xorg)
   #:use-module (guix packages)
+  #:use-module (guix transformations)
   #:use-module (guix download)
-  #:export (xkeyboard-config-2.44))
+  #:export (xkeyboard-config-git))
+
 
 ;; Adds colemak_dh_wide_iso variant
-(define-public xkeyboard-config-2.44
+(define xkeyboard-config-git
   (package
    (inherit xkeyboard-config)
    (version "2.44")
-   (properties '((upstream-name . "xkeyboard-config")))
    (source (origin
             (method url-fetch)
             (uri
@@ -21,3 +22,5 @@
             (sha256
              (base32
               "0aillh6pmx5ji5jbqviq007vvg69ahz5832rz941s0xvxqzc7ljl"))))))
+
+xkeyboard-config-git
